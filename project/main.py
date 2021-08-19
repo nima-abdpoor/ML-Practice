@@ -1,4 +1,6 @@
 import pandas as pd
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 
 melbournFilePath = 'D:/nima/python/melb_data.csv'
@@ -33,12 +35,25 @@ def getDataByFeatureWithHead(feature: list, number: int = 7):
 
 def predict():
     melbournModel = DecisionTreeRegressor(random_state=1)
-    print(getDataByFeatureWithHead(melbourn_features), '\n***\n')
-    print(getDataByFeatureWithHead(melbourn_featuresTwo, 100), '\n***\n')
-    print(get_price(), '\n***\n')
     melbournModel.fit(getDataByFeature(melbourn_features), get_price())
-    print("Making predictions for the following 7 houses:\n")
-    print(melbournModel.predict(getDataByFeatureWithHead(melbourn_features)))
+    return melbournModel.predict(getDataByFeature(melbourn_features))
 
 
-print(predict())
+def calculateValidation():
+    predictedHomePrices = predict()
+    return mean_absolute_error(get_price(), predictedHomePrices)
+
+
+def calculateValidationWithDataSepration():
+    trainX, valX, trainY, valY = train_test_split(
+        getDataByFeature(melbourn_features),
+        get_price(),
+        random_state=0)
+    melbournModel = DecisionTreeRegressor()
+    melbournModel.fit(trainX, trainY)
+    prediction = melbournModel.predict(valX)
+    return mean_absolute_error(valY, prediction)
+
+
+print(calculateValidationWithDataSepration())
+print(calculateValidation())
