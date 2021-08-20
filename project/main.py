@@ -55,5 +55,26 @@ def calculateValidationWithDataSepration():
     return mean_absolute_error(valY, prediction)
 
 
-print(calculateValidationWithDataSepration())
-print(calculateValidation())
+def get_MAE(max_leaf_nodes, trainX, trainY, valX, valY):
+    model = DecisionTreeRegressor(max_leaf_nodes=max_leaf_nodes, random_state=0)
+    model.fit(trainX, trainY)
+    predictionVal = model.predict(valX)
+    mae = mean_absolute_error(valY, predictionVal)
+    return mae
+
+
+# compare MAE with differing values of max_leaf_nodes
+def calculateMAEWithLeafNodes():
+    trainX, valX, trainY, valY = train_test_split(
+        getDataByFeature(melbourn_features),
+        get_price(),
+        random_state=0)
+    maeResults = []
+    for max_leaf_nodes in [50, 500, 5000, 50000]:
+        my_mea = get_MAE(max_leaf_nodes, trainX, trainY, valX, valY)
+        print("Max leaf nodes: %d  \t\t Mean Absolute Error:  %d" % (max_leaf_nodes, my_mea))
+        maeResults.append(my_mea.__int__())
+    return maeResults
+
+
+print(calculateMAEWithLeafNodes().__getitem__(2))
